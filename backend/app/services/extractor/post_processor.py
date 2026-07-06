@@ -50,3 +50,34 @@ def fill_missing_fields(raw: dict) -> dict:
         raw["floor"] = 0
 
     return raw
+
+
+# Room type coercion map — Gemini sometimes uses non-standard names
+ROOM_TYPE_COERCE = {
+    "DINING_ROOM": "LIVING",
+    "DINING": "LIVING",
+    "SITTING_ROOM": "LIVING",
+    "LOUNGE": "LIVING",
+    "HALL": "CORRIDOR",
+    "HALLWAY": "CORRIDOR",
+    "FOYER": "CORRIDOR",
+    "ENTRANCE_HALL": "CORRIDOR",
+    "STORE": "UTILITY",
+    "STOREROOM": "UTILITY",
+    "STORAGE": "UTILITY",
+    "WC": "TOILET",
+    "WASHROOM": "BATHROOM",
+    "POWDER_ROOM": "TOILET",
+    "LAUNDRY": "UTILITY",
+    "TERRACE": "BALCONY",
+    "VERANDAH": "BALCONY",
+}
+
+
+def coerce_room_types(raw: dict) -> dict:
+    """Map non-standard Gemini room types to our RoomType enum values."""
+    for room in raw.get("rooms", []):
+        room_type = room.get("type", "").upper()
+        if room_type in ROOM_TYPE_COERCE:
+            room["type"] = ROOM_TYPE_COERCE[room_type]
+    return raw

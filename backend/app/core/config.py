@@ -3,25 +3,21 @@ from functools import lru_cache
 
 
 class Settings(BaseSettings):
-    # App
     APP_NAME: str = "Planalyze"
     VERSION: str = "0.1.0"
     ENV: str = "development"
 
-    # Database
     DATABASE_URL: str
 
-    # Gemini
-    GEMINI_API_KEY: str
+    # Vertex AI
+    PROJECT_ID: str = "planalyze-dev"
+    REGION: str = "asia-south1"
+    GOOGLE_APPLICATION_CREDENTIALS_JSON: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
 
-    # Consistency filter
     CONSISTENCY_RUNS: int = 5
     CONSISTENCY_THRESHOLD: int = 3
-
-    # Storage
     STORAGE_DIR: str = "/storage/plans"
-
-    # CORS
     ALLOWED_ORIGINS: list[str] = ["http://localhost:5173"]
 
     class Config:

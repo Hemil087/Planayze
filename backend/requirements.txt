@@ -25,3 +25,4 @@ pillow==10.3.0
 # File uploads
 python-multipart==0.0.9
 json-repair==0.25.2
+google-cloud-aiplatform>=1.45.0
