@@ -1,0 +1,26 @@
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# Config & validation
+pydantic[v2]==2.7.1
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
+
+# Database
+sqlalchemy==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+
+# Gemini
+google-generativeai==0.5.4
+
+# Geometry
+shapely==2.0.4
+numpy==1.26.4
+
+# Image handling
+pillow==10.3.0
+
+# File uploads
+python-multipart==0.0.9
