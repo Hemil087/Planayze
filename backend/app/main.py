@@ -23,13 +23,18 @@ app.add_middleware(
 )
 
 # -------------------------------------------------------------------
-# Routers  (uncomment each as the phase is implemented)
+# Routers
 # -------------------------------------------------------------------
-# from app.api.routes import upload, analysis, report, chat
-# app.include_router(upload.router,   prefix="/upload",            tags=["Upload"])
-# app.include_router(analysis.router, prefix="/analysis",          tags=["Analysis"])
-# app.include_router(report.router,   prefix="/report",            tags=["Report"])
-# app.include_router(chat.router,     prefix="/chat",              tags=["Chat"])
+from app.api.routes import upload          # noqa: E402
+app.include_router(upload.router, prefix="/upload", tags=["Upload"])
+
+# Uncomment as each phase is completed:
+# from app.api.routes import analysis
+# from app.api.routes import report
+# from app.api.routes import chat
+# app.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
+# app.include_router(report.router,   prefix="/report",   tags=["Report"])
+# app.include_router(chat.router,     prefix="/chat",     tags=["Chat"])
 
 
 # -------------------------------------------------------------------
