@@ -12,7 +12,7 @@ rule engine found — not new analysis.
 import json
 import logging
 
-from vertexai.generative_models import GenerationConfig
+from vertexai.generative_models import GenerationConfig, SafetySetting, HarmCategory, HarmBlockThreshold
 
 from app.core.gemini import get_gemini_model
 from app.schemas.report import ReportSummary
@@ -79,14 +79,50 @@ async def write_summary(report: ReportSummary) -> str:
 
     try:
         model = get_gemini_model()
+        # Relax safety filters — the findings JSON contains benign
+        # architectural terms ("violation", "noise") that can trip
+        # Vertex AI's content filter.
+        safety_settings = [
+            SafetySetting(
+                category=category,
+                threshold=HarmBlockThreshold.OFF,
+            )
+            for category in [
+                HarmCategory.HARM_CATEGORY_HARASSMENT,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            ]
+        ]
+
         response = model.generate_content(
             [prompt],
             generation_config=GenerationConfig(
                 temperature=0.3,
-                max_output_tokens=512,
+                max_output_tokens=8192,
             ),
+            safety_settings=safety_settings,
         )
-        summary = response.text.strip()
+
+        # Vertex AI raises ValueError on .text if response has no
+        # candidates (content filter, empty generation, etc.)
+        if not response.candidates:
+            logger.warning(
+                f"Gemini returned no candidates for plan {report.plan_id} — "
+                f"using fallback summary"
+            )
+            return _fallback_summary(report)
+
+        candidate = response.candidates[0]
+        if not candidate.content or not candidate.content.parts:
+            logger.warning(
+                f"Gemini candidate has no content for plan {report.plan_id} — "
+                f"finish_reason={candidate.finish_reason}, "
+                f"using fallback summary"
+            )
+            return _fallback_summary(report)
+
+        summary = candidate.content.parts[0].text.strip()
         logger.info(
             f"Summary generated for plan {report.plan_id} "
             f"({len(summary)} chars)"
