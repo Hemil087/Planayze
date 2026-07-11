@@ -1,7 +1,28 @@
 export const SEVERITY_CONFIG = {
-  VIOLATION:   { label: 'Violation',   color: 'bg-red-100 text-red-800 border-red-200',   icon: '✕' },
-  TRADEOFF:    { label: 'Tradeoff',    color: 'bg-amber-100 text-amber-800 border-amber-200', icon: '⚠' },
-  OBSERVATION: { label: 'Observation', color: 'bg-blue-100 text-blue-700 border-blue-200',  icon: 'ℹ' },
+  VIOLATION: {
+    label: 'Violations',
+    icon: '✕',
+    iconBg: 'bg-red-100 text-red-600',
+    border: 'border-red-100 bg-white',
+    accent: 'text-red-600',
+    dot: 'bg-red-500',
+  },
+  TRADEOFF: {
+    label: 'Tradeoffs',
+    icon: '⚡',
+    iconBg: 'bg-amber-100 text-amber-600',
+    border: 'border-amber-100 bg-white',
+    accent: 'text-amber-600',
+    dot: 'bg-amber-500',
+  },
+  OBSERVATION: {
+    label: 'Observations',
+    icon: '✓',
+    iconBg: 'bg-emerald-100 text-emerald-600',
+    border: 'border-emerald-100 bg-white',
+    accent: 'text-emerald-600',
+    dot: 'bg-emerald-500',
+  },
 };
 
 export const CATEGORY_LABELS = {
@@ -11,4 +32,13 @@ export const CATEGORY_LABELS = {
   CIRCULATION:      'Circulation',
   ADJACENCY:        'Adjacency',
   SIZE_ADEQUACY:    'Size Adequacy',
+};
+
+export const CATEGORY_ICONS = {
+  SPACE_EFFICIENCY: '📏',
+  VENTILATION:      '💨',
+  PRIVACY:          '🔒',
+  CIRCULATION:      '🚶',
+  ADJACENCY:        '🏗️',
+  SIZE_ADEQUACY:    '📐',
 };
