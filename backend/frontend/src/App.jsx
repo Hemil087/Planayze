@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import UploadZone from './components/upload/UploadZone';
 import ReportCard from './components/report/ReportCard';
 import ChatPanel from './components/chat/ChatPanel';
-import { uploadFloorPlan, startAnalysis, pollStatus, fetchReport } from './utils/api';
+import { uploadFloorPlan, startAnalysis, pollStatus, fetchReport, RateLimitError } from './utils/api';
 
 const STEPS = {
   UPLOAD: 'upload',
@@ -31,6 +31,7 @@ export default function App() {
   const [planId, setPlanId] = useState(null);
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
+  const [isRateLimit, setIsRateLimit] = useState(false);
   const [activeStage, setActiveStage] = useState(0);
   const [showChat, setShowChat] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -49,6 +50,7 @@ export default function App() {
       await startAnalysis(id);
       setActiveStage(2);
     } catch (err) {
+      setIsRateLimit(err instanceof RateLimitError);
       setError(err.message);
       setStep(STEPS.ERROR);
     }
@@ -85,6 +87,7 @@ export default function App() {
     setPlanId(null);
     setReport(null);
     setError(null);
+    setIsRateLimit(false);
     setShowChat(false);
     setPreviewUrl(null);
     setActiveStage(0);
@@ -228,16 +231,25 @@ export default function App() {
         {step === STEPS.ERROR && (
           <div className="max-w-md mx-auto px-4 sm:px-6 py-20 text-center animate-fade-in">
             <div className="w-14 h-14 mx-auto rounded-2xl bg-red-50 flex items-center justify-center mb-5">
-              <span className="text-2xl">⚠️</span>
+              <span className="text-2xl">{isRateLimit ? '⏳' : '⚠️'}</span>
             </div>
-            <h2 className="font-display text-2xl text-gray-900 mb-2">Something went wrong</h2>
-            <p className="text-gray-500 text-sm mb-6">{error}</p>
-            <button
-              onClick={handleReset}
-              className="px-6 py-2.5 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-all active:scale-95 shadow-sm"
-            >
-              Try Again
-            </button>
+            <h2 className="font-display text-2xl text-gray-900 mb-2">
+              {isRateLimit ? 'Daily limit reached' : 'Something went wrong'}
+            </h2>
+            <p className="text-gray-500 text-sm mb-2">{error}</p>
+            {isRateLimit && (
+              <p className="text-gray-400 text-xs mb-6">
+                This is a portfolio project with limited API credits. The limit resets daily — please try again tomorrow!
+              </p>
+            )}
+            {!isRateLimit && (
+              <button
+                onClick={handleReset}
+                className="mt-4 px-6 py-2.5 bg-brand-600 text-white font-medium rounded-xl hover:bg-brand-700 transition-all active:scale-95 shadow-sm"
+              >
+                Try Again
+              </button>
+            )}
           </div>
         )}
       </main>

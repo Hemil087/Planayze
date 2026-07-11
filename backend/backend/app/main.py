@@ -1,5 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -43,3 +46,24 @@ app.include_router(chat.router,     prefix="/chat",     tags=["Chat"])
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "ok", "version": settings.VERSION}
+
+
+# -------------------------------------------------------------------
+# Serve React frontend (production build)
+# -------------------------------------------------------------------
+STATIC_DIR = Path("/app/static")
+
+if STATIC_DIR.exists():
+    # Serve built assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=STATIC_DIR / "assets"), name="assets")
+
+    # SPA fallback — serve index.html for all non-API routes
+    @app.get("/{full_path:path}")
+    async def serve_spa(request: Request, full_path: str):
+        # Don't intercept API routes or docs
+        if full_path.startswith(("upload", "analysis", "report", "chat", "health", "docs", "redoc", "openapi")):
+            return
+        file_path = STATIC_DIR / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(STATIC_DIR / "index.html")

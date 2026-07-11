@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { sendChatMessage } from '../../utils/api';
+import { sendChatMessage, RateLimitError } from '../../utils/api';
 import ChatMessage from './ChatMessage';
 
 const SUGGESTIONS = [
@@ -33,7 +33,10 @@ export default function ChatPanel({ planId }) {
       const res = await sendChatMessage(planId, updated);
       setMessages([...updated, { role: 'assistant', content: res.reply, tools: res.tool_calls_made }]);
     } catch (err) {
-      setMessages([...updated, { role: 'assistant', content: `Sorry, something went wrong: ${err.message}` }]);
+      const msg = err instanceof RateLimitError
+        ? '⏳ Daily chat limit reached. This is a portfolio project with limited API credits — please try again tomorrow!'
+        : `Sorry, something went wrong: ${err.message}`;
+      setMessages([...updated, { role: 'assistant', content: msg }]);
     } finally {
       setLoading(false);
     }

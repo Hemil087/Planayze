@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: planalyze
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: planalyze-db
+          property: connectionString
+        # Render gives postgres:// — FastAPI needs postgresql+asyncpg://
+        # We handle this via a start script or config.py
+      - key: PROJECT_ID
+        sync: false
+      - key: REGION
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS_JSON
+        sync: false
+      - key: ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: '["*"]'
+    healthCheckPath: /health
+
+databases:
+  - name: planalyze-db
+    plan: free
+    databaseName: planalyze
+    user: planalyze_user

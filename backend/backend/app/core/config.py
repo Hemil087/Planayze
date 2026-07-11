@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
 
 
@@ -19,6 +20,16 @@ class Settings(BaseSettings):
     CONSISTENCY_THRESHOLD: int = 3
     STORAGE_DIR: str = "/storage/plans"
     ALLOWED_ORIGINS: list[str] = ["http://localhost:5173"]
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_database_url(cls, v: str) -> str:
+        # Render gives postgres:// but SQLAlchemy needs postgresql+asyncpg://
+        if v.startswith("postgres://"):
+            v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif v.startswith("postgresql://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     class Config:
         env_file = ".env"
