@@ -1,0 +1,20 @@
+[
+  {
+    "plan_id": "eval_001",
+    "image": "plan_001.png",
+    "notes": "4BHK plan — Bedroom 3 and 4 are undersized, no cross-ventilation in most rooms",
+    "expected_findings": [
+      { "rule_id": "SIZE_BED", "room": "Bedroom 3" },
+      { "rule_id": "SIZE_BED", "room": "Bedroom 4" },
+      { "rule_id": "SIZE_005", "room": "Bedroom 3" },
+      { "rule_id": "VENT_003", "room": "Bedroom 1" },
+      { "rule_id": "VENT_003", "room": "Bedroom 3" },
+      { "rule_id": "VENT_003", "room": "Bedroom 4" },
+      { "rule_id": "VENT_003", "room": "Kitchen" },
+      { "rule_id": "ADJ_003", "room": "Bedroom 1" },
+      { "rule_id": "PRIV_002", "room": "Bedroom 1" },
+      { "rule_id": "SPACE_003", "room": "Hallway" },
+      { "rule_id": "SPACE_003", "room": "Balcony" }
+    ]
+  }
+]
