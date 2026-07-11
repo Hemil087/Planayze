@@ -35,4 +35,5 @@ RUN mkdir -p /storage/plans
 EXPOSE 8000
 
 # Production server — no reload
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run migrations then start server
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
