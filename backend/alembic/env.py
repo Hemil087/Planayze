@@ -10,9 +10,9 @@ from app.core.config import get_settings
 from app.core.database import Base
 
 # Import all models so autogenerate can detect them
-import backend.app.models.floor_plan  # noqa: F401
-import backend.app.models.analysis    # noqa: F401
-import backend.app.models.report      # noqa: F401
+import app.models.floor_plan  # noqa: F401
+import app.models.analysis    # noqa: F401
+import app.models.report      # noqa: F401
 
 # ---------------------------------------------------------------
 # Alembic Config
