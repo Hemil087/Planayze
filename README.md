@@ -10,10 +10,11 @@ Upload a floor plan → get a structured, traceable pros & cons report grounded 
 
 Most buyers can't read a floor plan critically. Planalyze fills that gap. You upload a floor plan image, and the system:
 
-1. Extracts room geometry as structured JSON using Gemini (vision only — no judgments)
+1. Extracts room geometry as structured JSON using Gemini 2.5 Flash (vision only — no judgments)
 2. Runs a deterministic rule engine over the extracted geometry
-3. Produces a scored pros/cons report where every finding cites the room and rule that triggered it
-4. Highlights findings visually on the floor plan itself
+3. Applies a consistency filter (runs the pipeline N times, suppresses non-recurring findings)
+4. Produces a scored pros/cons report where every finding cites the room and rule that triggered it
+5. Lets you chat with your floor plan — ask geometry questions answered by deterministic tools
 
 The result is a report a buyer can act on — not a generic paragraph that changes every time you ask.
 
@@ -26,7 +27,7 @@ Floor Plan Image
       │
       ▼
 ┌──────────────────────┐
-│  Gemini (Vision)     │  ← Extracts geometry only (rooms, dims, doors, windows)
+│  Gemini 2.5 Flash    │  ← Extracts geometry only (rooms, dims, doors, windows)
 │  + Schema Validator  │  ← Rejects / retries on schema violations
 └────────┬─────────────┘
          │  Validated Extraction JSON
@@ -46,13 +47,16 @@ Floor Plan Image
          │  Hardened Findings
          ▼
 ┌──────────────────┐
-│  Report Builder  │  ← Structured JSON + LLM-written human summary
+│  Report Builder  │  ← Scored JSON + Gemini-written summary
 └────────┬─────────┘
          │
-         ▼
-┌──────────────────┐
-│  React Frontend  │  ← Report cards + visual overlays on the plan
-└──────────────────┘
+         ├──────────────────────┐
+         ▼                      ▼
+┌──────────────────┐   ┌──────────────────┐
+│  React Frontend  │   │  Chat Agent      │
+│  Report cards    │   │  Geometry tools   │
+│  Score badge     │   │  via Gemini FC    │
+└──────────────────┘   └──────────────────┘
 ```
 
 **Key design decision:** Gemini is trusted only to *see*, never to *reason about rules*. All analysis is deterministic Python over the extracted geometry. This is what makes findings verifiable.
@@ -78,12 +82,12 @@ Each rule is grounded in the **National Building Code of India (NBC 2016)** or *
 
 | Layer | Technology |
 |---|---|
-| Frontend | React + Vite |
-| Backend | FastAPI (Python) |
-| LLM | Gemini 1.5 Pro (multimodal extraction) |
-| Database | PostgreSQL + JSONB |
-| Geometry | Shapely, NumPy |
+| Frontend | React + Vite + Tailwind CSS |
+| Backend | FastAPI (Python 3.11) |
+| LLM | Gemini 2.5 Flash via Vertex AI |
+| Database | PostgreSQL + async SQLAlchemy + JSONB |
 | Validation | Pydantic v2 |
+| Infrastructure | Docker Compose |
 
 ---
 
@@ -91,28 +95,28 @@ Each rule is grounded in the **National Building Code of India (NBC 2016)** or *
 
 ```
 planalyze/
+├── docker-compose.yml              # Backend + PostgreSQL services
+│
 ├── frontend/
 │   └── src/
+│       ├── App.jsx                  # Main app — upload → analyze → report flow
 │       ├── components/
-│       │   ├── upload/        # Floor plan upload UI
-│       │   ├── report/        # ReportCard, FindingItem, ScoreBadge
-│       │   ├── overlay/       # Visual highlight layer on the plan
-│       │   └── chat/          # Phase C — chat with your floor plan
-│       ├── pages/             # Home, Analysis, Compare
-│       ├── hooks/             # useUpload, useAnalysis, useChat
-│       └── store/             # analysisStore, chatStore
+│       │   ├── upload/              # Drag & drop upload zone
+│       │   ├── report/              # ReportCard, FindingItem, ScoreBadge
+│       │   └── chat/                # ChatPanel, ChatMessage
+│       └── utils/                   # API client, formatters, constants
 │
 └── backend/
     └── app/
-        ├── api/routes/        # /upload  /analysis  /report  /chat
-        ├── core/              # Gemini client, DB, config
+        ├── api/routes/              # /upload  /analysis  /report  /chat
+        ├── core/                    # Gemini client, DB, config, storage
         ├── services/
-        │   ├── extractor/     # Gemini extraction + schema validation + retry
-        │   ├── engine/rules/  # One file per rule category
-        │   ├── report/        # Report builder + LLM summary writer
-        │   └── chat/          # Chat agent + geometry tools (Phase C)
-        ├── schemas/           # Pydantic schemas — the shared extraction contract
-        └── evals/             # Ground truth labels + precision metrics
+        │   ├── extractor/           # Gemini extraction + schema validation + retry
+        │   ├── engine/rules/        # One file per rule category (6 files)
+        │   ├── report/              # Report builder + Gemini summary writer
+        │   └── chat/                # Chat agent + 5 geometry tools
+        ├── schemas/                 # Pydantic schemas — the shared extraction contract
+        └── evals/                   # Ground truth labels + precision metrics
 ```
 
 ---
@@ -121,19 +125,30 @@ planalyze/
 
 ### Prerequisites
 
-- Python 3.11+
+- Docker & Docker Compose
 - Node.js 18+
-- PostgreSQL
-- Gemini API key
+- A Google Cloud project with Vertex AI enabled
+- A service account key with Vertex AI permissions
 
-### Backend
+### Backend (Docker)
 
 ```bash
-cd backend
-python -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env          # add GEMINI_API_KEY and DATABASE_URL
-uvicorn app.main:app --reload
+# 1. Configure environment
+cp backend/.env.example backend/.env
+# Edit backend/.env:
+#   DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/planalyze
+#   PROJECT_ID=your-gcp-project
+#   REGION=asia-south1
+#   GOOGLE_APPLICATION_CREDENTIALS_JSON={"type":"service_account",...}  (single-line JSON)
+
+# 2. Start services
+docker-compose up --build -d
+
+# 3. Run migrations
+docker-compose exec backend alembic upgrade head
+
+# 4. Verify
+curl http://localhost:8000/health
 ```
 
 ### Frontend
@@ -141,11 +156,12 @@ uvicorn app.main:app --reload
 ```bash
 cd frontend
 npm install
-cp .env.example .env          # add VITE_API_URL
 npm run dev
 ```
 
 Backend runs on `http://localhost:8000`, frontend on `http://localhost:5173`.
+
+The Vite dev server proxies `/api/*` to the backend automatically — no CORS configuration needed in development.
 
 ---
 
@@ -154,10 +170,25 @@ Backend runs on `http://localhost:8000`, frontend on `http://localhost:5173`.
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/upload` | Upload floor plan image, returns `plan_id` |
-| `POST` | `/analysis/{plan_id}` | Run extraction + rule engine |
+| `POST` | `/analysis/{plan_id}` | Start analysis (async, returns 202) |
+| `GET` | `/analysis/{plan_id}/status` | Poll analysis status |
 | `GET` | `/report/{plan_id}` | Fetch structured findings report |
-| `POST` | `/chat/{plan_id}` | Phase C — ask geometry questions |
+| `POST` | `/chat/{plan_id}` | Chat with the floor plan using geometry tools |
 | `GET` | `/health` | Health check |
+
+---
+
+## Chat Agent — Geometry Tools
+
+The chat endpoint uses Gemini function calling with 5 deterministic tools. The LLM decides *which* tool to call; the tool returns factual data; the LLM narrates it.
+
+| Tool | What It Does |
+|---|---|
+| `room_area` | Returns area and dimensions of a room |
+| `fits_furniture` | Checks if furniture fits with clearance (knows standard bed/sofa/desk sizes) |
+| `path_between` | BFS shortest path between two rooms through door connections |
+| `sun_exposure` | Reports wall orientations → morning/evening sun based on cardinal direction |
+| `list_rooms` | Lists all rooms with type and dimensions |
 
 ---
 
@@ -166,15 +197,57 @@ Backend runs on `http://localhost:8000`, frontend on `http://localhost:5173`.
 The `evals/` folder contains a hand-labeled ground truth set. Run metrics with:
 
 ```bash
-python -m app.evals.eval_runner
+docker-compose exec backend python -m app.evals.eval_runner
 ```
 
-This reports per-rule precision and overall hallucination rate (findings with no grounding in the extracted geometry). The consistency filter target is < 1 ungrounded finding per 10 plans.
+This reports per-rule precision, recall, and hallucination rate. The eval runs the full production pipeline (extraction + consistency filter) per plan.
+
+Targets: per-rule precision ≥ 0.80, hallucination rate < 0.10.
 
 ---
 
-## Phases
+## Build Phases
 
-- **Phase A** ✅ — Gemini extraction spike + schema contract
-- **Phase B** ✅ — Rule engine + consistency filter + report pipeline + evals
-- **Phase C** 🔄 — "Chat with your floor plan" agent using geometry tools
+| Phase | Description | Status |
+|---|---|---|
+| 0 | Docker + FastAPI + PostgreSQL setup | ✅ |
+| 1 | Pydantic extraction schema contract | ✅ |
+| 2 | SQLAlchemy models + Alembic migrations | ✅ |
+| 3 | Upload route + image storage | ✅ |
+| 4 | Gemini extractor + schema validation + retry | ✅ |
+| 5 | Deterministic rule engine (6 categories) | ✅ |
+| 6 | Consistency filter (N runs, threshold suppression) | ✅ |
+| 7 | Report builder + Gemini summary writer | ✅ |
+| 8 | Analysis route (async) + report route | ✅ |
+| 9 | Eval framework (metrics, runner, ground truth) | ✅ |
+| 10 | Chat agent with geometry tool calling | ✅ |
+| — | React frontend | ✅ |
+
+---
+
+## Why Not Just Use ChatGPT?
+
+ChatGPT can comment on a floor plan. Planalyze produces *verifiable* analysis:
+
+- **Schema-validated extraction** — Gemini returns structured JSON matching a frozen Pydantic contract, with retry on violations
+- **Deterministic rule engine** — every finding is produced by Python code, not LLM reasoning. Same extraction → same findings, every time
+- **Self-consistency filtering** — runs the pipeline N times, suppresses findings that don't recur above a threshold
+- **Measurable precision** — a hand-labeled eval set with per-rule precision and hallucination rate metrics
+- **Evidence-backed findings** — every finding cites the specific room, rule, and standard that triggered it
+- **Tool-backed chat** — geometry questions are answered by deterministic functions, not hallucination
+
+> *"ChatGPT is the model. I built the system around the model."*
+
+---
+
+## Docker Commands
+
+```bash
+docker-compose up --build -d          # Start all services
+docker-compose logs -f backend        # View backend logs
+docker-compose exec backend alembic upgrade head   # Run migrations
+docker-compose exec backend python -m app.evals.eval_runner  # Run evals
+docker-compose down                   # Stop everything
+docker-compose down -v                # Stop + wipe DB volume
+```
+
