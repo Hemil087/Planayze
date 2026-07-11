@@ -33,9 +33,8 @@ from app.api.routes import report          # noqa: E402
 app.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 app.include_router(report.router,   prefix="/report",   tags=["Report"])
 
-# Uncomment when Phase 10 is completed:
-# from app.api.routes import chat
-# app.include_router(chat.router,     prefix="/chat",     tags=["Chat"])
+from app.api.routes import chat           # noqa: E402
+app.include_router(chat.router,     prefix="/chat",     tags=["Chat"])
 
 
 # -------------------------------------------------------------------
