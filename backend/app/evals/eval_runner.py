@@ -22,15 +22,15 @@ import sys
 import logging
 from pathlib import Path
 
-from backend.app.evals.metrics import (
+from app.evals.metrics import (
     ExpectedFinding,
     evaluate_plan,
     aggregate,
     AggregateMetrics,
     EvalResult,
 )
-from backend.app.services.extractor.retry import run_extraction_with_retry
-from backend.app.services.engine.consistency_filter import run_consistency_filter
+from app.services.extractor.retry import run_extraction_with_retry
+from app.services.engine.consistency_filter import run_consistency_filter
 
 logging.basicConfig(
     level=logging.INFO,

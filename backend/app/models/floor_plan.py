@@ -5,7 +5,7 @@ from uuid import uuid4
 from sqlalchemy import Column, String, DateTime, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 
-from backend.app.core.database import Base
+from app.core.database import Base
 
 
 class PlanStatus(str, enum.Enum):

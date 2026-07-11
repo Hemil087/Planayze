@@ -1,6 +1,6 @@
-from backend.app.schemas.extraction import FloorPlanExtraction, RoomType
-from backend.app.schemas.report import Finding, Category
-from backend.app.services.engine.helpers import violation, tradeoff, observation, rooms_by_type
+from app.schemas.extraction import FloorPlanExtraction, RoomType
+from app.schemas.report import Finding, Category
+from app.services.engine.helpers import violation, tradeoff, observation, rooms_by_type
 
 WINDOW_FLOOR_RATIO_MIN = 0.10   # NBC 2016 Cl. 8.1 — window area / floor area
 

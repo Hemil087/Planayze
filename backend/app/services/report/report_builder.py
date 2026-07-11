@@ -18,7 +18,7 @@ Cons are sorted by severity: VIOLATION first, then TRADEOFF, then OBSERVATION.
 
 import logging
 
-from backend.app.schemas.report import Finding, ReportSummary, Severity
+from app.schemas.report import Finding, ReportSummary, Severity
 
 logger = logging.getLogger(__name__)
 

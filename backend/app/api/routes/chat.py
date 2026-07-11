@@ -14,12 +14,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.core.database import get_db
-from backend.app.core.rate_limit import check_rate_limit
-from backend.app.models.analysis import Analysis
-from backend.app.schemas.extraction import FloorPlanExtraction
-from backend.app.schemas.chat import ChatRequest, ChatResponse
-from backend.app.services.chat.chat_agent import run_chat_agent
+from app.core.database import get_db
+from app.core.rate_limit import check_rate_limit
+from app.models.analysis import Analysis
+from app.schemas.extraction import FloorPlanExtraction
+from app.schemas.chat import ChatRequest, ChatResponse
+from app.services.chat.chat_agent import run_chat_agent
 
 logger = logging.getLogger(__name__)
 

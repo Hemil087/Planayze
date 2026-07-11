@@ -1,6 +1,6 @@
 from uuid import uuid4
-from backend.app.schemas.extraction import FloorPlanExtraction, Room, RoomType
-from backend.app.schemas.report import Finding, Severity, Category
+from app.schemas.extraction import FloorPlanExtraction, Room, RoomType
+from app.schemas.report import Finding, Severity, Category
 
 
 # -------------------------------------------------------------------

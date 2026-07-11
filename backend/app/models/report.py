@@ -4,7 +4,7 @@ from uuid import uuid4
 from sqlalchemy import Column, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
-from backend.app.core.database import Base
+from app.core.database import Base
 
 
 class Report(Base):

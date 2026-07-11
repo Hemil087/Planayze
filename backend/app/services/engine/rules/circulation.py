@@ -1,6 +1,6 @@
-from backend.app.schemas.extraction import FloorPlanExtraction, RoomType
-from backend.app.schemas.report import Finding, Category
-from backend.app.services.engine.helpers import (
+from app.schemas.extraction import FloorPlanExtraction, RoomType
+from app.schemas.report import Finding, Category
+from app.services.engine.helpers import (
     violation, tradeoff, rooms_by_type,
     build_adjacency, path_exists_through,
 )

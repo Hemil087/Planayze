@@ -1,10 +1,10 @@
 import logging
 from collections import defaultdict
 
-from backend.app.schemas.extraction import FloorPlanExtraction
-from backend.app.schemas.report import Finding
-from backend.app.services.engine.rule_runner import run_rules
-from backend.app.core.config import get_settings
+from app.schemas.extraction import FloorPlanExtraction
+from app.schemas.report import Finding
+from app.services.engine.rule_runner import run_rules
+from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

@@ -11,7 +11,7 @@ returning a structured result the agent can narrate to the user.
 
 from collections import deque
 
-from backend.app.schemas.extraction import FloorPlanExtraction, Room, Wall
+from app.schemas.extraction import FloorPlanExtraction, Room, Wall
 
 
 # ── Lookup helpers ───────────────────────────────────────────────

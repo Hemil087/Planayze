@@ -3,15 +3,15 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.core.database import get_db
-from backend.app.core.rate_limit import check_rate_limit
-from backend.app.core.storage import (
+from app.core.database import get_db
+from app.core.rate_limit import check_rate_limit
+from app.core.storage import (
     save_image,
     get_extension,
     ALLOWED_CONTENT_TYPES,
     MAX_FILE_SIZE_BYTES,
 )
-from backend.app.models.floor_plan import FloorPlan, PlanStatus
+from app.models.floor_plan import FloorPlan, PlanStatus
 
 router = APIRouter()
 

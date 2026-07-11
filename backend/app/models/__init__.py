@@ -1,6 +1,6 @@
-from backend.app.models.floor_plan import FloorPlan, PlanStatus
-from backend.app.models.analysis import Analysis
-from backend.app.models.report import Report
+from app.models.floor_plan import FloorPlan, PlanStatus
+from app.models.analysis import Analysis
+from app.models.report import Report
 
 __all__ = [
     "FloorPlan",

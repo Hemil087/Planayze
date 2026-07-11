@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pathlib import Path
-from backend.app.core.config import get_settings
+from app.core.config import get_settings
 
 settings = get_settings()
 
@@ -28,15 +28,15 @@ app.add_middleware(
 # -------------------------------------------------------------------
 # Routers
 # -------------------------------------------------------------------
-from backend.app.api.routes import upload          # noqa: E402
+from app.api.routes import upload          # noqa: E402
 app.include_router(upload.router, prefix="/upload", tags=["Upload"])
 
-from backend.app.api.routes import analysis       # noqa: E402
-from backend.app.api.routes import report          # noqa: E402
+from app.api.routes import analysis       # noqa: E402
+from app.api.routes import report          # noqa: E402
 app.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 app.include_router(report.router,   prefix="/report",   tags=["Report"])
 
-from backend.app.api.routes import chat           # noqa: E402
+from app.api.routes import chat           # noqa: E402
 app.include_router(chat.router,     prefix="/chat",     tags=["Chat"])
 
 

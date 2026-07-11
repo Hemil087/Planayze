@@ -13,8 +13,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.core.database import get_db
-from backend.app.models.report import Report as ReportModel
+from app.core.database import get_db
+from app.models.report import Report as ReportModel
 
 logger = logging.getLogger(__name__)
 

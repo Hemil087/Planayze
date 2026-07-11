@@ -3,7 +3,7 @@ import PIL.Image
 from json_repair import repair_json
 
 from vertexai.generative_models import GenerationConfig, Part, Image as VertexImage
-from backend.app.core.gemini import get_gemini_model
+from app.core.gemini import get_gemini_model
 
 
 def extract_floor_plan_raw(

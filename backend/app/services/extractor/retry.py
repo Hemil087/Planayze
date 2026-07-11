@@ -3,12 +3,12 @@ import json
 import time
 import logging
 
-from backend.app.core.exceptions import ExtractionFailedError
-from backend.app.schemas.extraction import FloorPlanExtraction
-from backend.app.services.extractor.gemini_extractor import extract_floor_plan_raw
-from backend.app.services.extractor.schema_validator import validate_extraction
-from backend.app.services.extractor.prompts import build_extraction_prompt
-from backend.app.services.extractor.post_processor import fill_missing_fields,coerce_room_types
+from app.core.exceptions import ExtractionFailedError
+from app.schemas.extraction import FloorPlanExtraction
+from app.services.extractor.gemini_extractor import extract_floor_plan_raw
+from app.services.extractor.schema_validator import validate_extraction
+from app.services.extractor.prompts import build_extraction_prompt
+from app.services.extractor.post_processor import fill_missing_fields,coerce_room_types
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 from pydantic import ValidationError
-from backend.app.schemas.extraction import FloorPlanExtraction
+from app.schemas.extraction import FloorPlanExtraction
 
 
 class ValidationResult:

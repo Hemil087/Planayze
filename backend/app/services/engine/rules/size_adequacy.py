@@ -1,6 +1,6 @@
-from backend.app.schemas.extraction import FloorPlanExtraction, RoomType
-from backend.app.schemas.report import Finding, Category
-from backend.app.services.engine.helpers import violation, observation, rooms_by_type
+from app.schemas.extraction import FloorPlanExtraction, RoomType
+from app.schemas.report import Finding, Category
+from app.services.engine.helpers import violation, observation, rooms_by_type
 
 # NBC 2016 minimum room sizes (sqm)
 NBC_MINIMUMS = {

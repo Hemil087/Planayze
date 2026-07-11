@@ -1,4 +1,4 @@
-from backend.app.schemas.extraction import (
+from app.schemas.extraction import (
     RoomType,
     Wall,
     Window,
@@ -6,13 +6,13 @@ from backend.app.schemas.extraction import (
     Room,
     FloorPlanExtraction,
 )
-from backend.app.schemas.report import (
+from app.schemas.report import (
     Severity,
     Category,
     Finding,
     ReportSummary,
 )
-from backend.app.schemas.chat import (
+from app.schemas.chat import (
     ChatMessage,
     ChatRequest,
     ChatResponse,

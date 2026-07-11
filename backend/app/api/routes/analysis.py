@@ -19,21 +19,21 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.core.database import get_db, AsyncSessionLocal
-from backend.app.core.rate_limit import check_rate_limit
-from backend.app.core.storage import read_image
-from backend.app.core.exceptions import ExtractionFailedError
-from backend.app.core.config import get_settings
+from app.core.database import get_db, AsyncSessionLocal
+from app.core.rate_limit import check_rate_limit
+from app.core.storage import read_image
+from app.core.exceptions import ExtractionFailedError
+from app.core.config import get_settings
 
-from backend.app.models.floor_plan import FloorPlan, PlanStatus
-from backend.app.models.analysis import Analysis
-from backend.app.models.report import Report as ReportModel
+from app.models.floor_plan import FloorPlan, PlanStatus
+from app.models.analysis import Analysis
+from app.models.report import Report as ReportModel
 
-from backend.app.services.extractor.retry import run_extraction_with_retry
-from backend.app.services.engine.consistency_filter import run_consistency_filter
-from backend.app.services.engine.rule_runner import run_rules
-from backend.app.services.report.report_builder import build_report
-from backend.app.services.report.summary_writer import write_summary
+from app.services.extractor.retry import run_extraction_with_retry
+from app.services.engine.consistency_filter import run_consistency_filter
+from app.services.engine.rule_runner import run_rules
+from app.services.report.report_builder import build_report
+from app.services.report.summary_writer import write_summary
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

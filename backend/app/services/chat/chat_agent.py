@@ -29,11 +29,11 @@ from vertexai.generative_models import (
     HarmBlockThreshold,
 )
 
-from backend.app.core.gemini import _init_vertexai
-from backend.app.core.config import get_settings
-from backend.app.schemas.extraction import FloorPlanExtraction
-from backend.app.schemas.chat import ChatMessage, ChatResponse
-from backend.app.services.chat.geometry_tools import (
+from app.core.gemini import _init_vertexai
+from app.core.config import get_settings
+from app.schemas.extraction import FloorPlanExtraction
+from app.schemas.chat import ChatMessage, ChatResponse
+from app.services.chat.geometry_tools import (
     TOOL_DECLARATIONS,
     TOOL_REGISTRY,
 )

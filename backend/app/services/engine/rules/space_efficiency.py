@@ -1,6 +1,6 @@
-from backend.app.schemas.extraction import FloorPlanExtraction, RoomType
-from backend.app.schemas.report import Finding, Category
-from backend.app.services.engine.helpers import violation, tradeoff, observation, rooms_by_type
+from app.schemas.extraction import FloorPlanExtraction, RoomType
+from app.schemas.report import Finding, Category
+from app.services.engine.helpers import violation, tradeoff, observation, rooms_by_type
 
 CARPET_RATIO_MIN = 0.70        # RERA minimum carpet-to-built-up ratio
 DEAD_SPACE_MAX   = 0.15        # max corridor/dead space as % of built-up

@@ -1,12 +1,12 @@
 import logging
 
-from backend.app.schemas.extraction import FloorPlanExtraction
-from backend.app.schemas.report import Finding
+from app.schemas.extraction import FloorPlanExtraction
+from app.schemas.report import Finding
 
-from backend.app.services.engine.rules import (
+from app.services.engine.rules import (
     ventilation,
 )
-from backend.app.services.engine.rules import adjacency, circulation, privacy, size_adequacy, space_efficiency
+from app.services.engine.rules import adjacency, circulation, privacy, size_adequacy, space_efficiency
 
 logger = logging.getLogger(__name__)
 

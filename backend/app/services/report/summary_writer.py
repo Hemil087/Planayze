@@ -14,8 +14,8 @@ import logging
 
 from vertexai.generative_models import GenerationConfig, SafetySetting, HarmCategory, HarmBlockThreshold
 
-from backend.app.core.gemini import get_gemini_model
-from backend.app.schemas.report import ReportSummary
+from app.core.gemini import get_gemini_model
+from app.schemas.report import ReportSummary
 
 logger = logging.getLogger(__name__)
 
