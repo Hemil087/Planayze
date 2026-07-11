@@ -1,9 +1,10 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.rate_limit import check_rate_limit
 from app.core.storage import (
     save_image,
     get_extension,
@@ -17,6 +18,7 @@ router = APIRouter()
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_floor_plan(
+    request: Request,
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
 ):
@@ -29,6 +31,9 @@ async def upload_floor_plan(
     - Creates a FloorPlan row with status UPLOADED
     - Returns plan_id to use in subsequent API calls
     """
+
+    # ── 0. Rate limit ───────────────────────────────────────────
+    check_rate_limit(request, "upload")
 
     # ── 1. Validate content type ────────────────────────────────
     if file.content_type not in ALLOWED_CONTENT_TYPES:

@@ -15,11 +15,12 @@ import asyncio
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db, AsyncSessionLocal
+from app.core.rate_limit import check_rate_limit
 from app.core.storage import read_image
 from app.core.exceptions import ExtractionFailedError
 from app.core.config import get_settings
@@ -124,6 +125,7 @@ async def _run_pipeline(plan_id: UUID, image_path: str) -> None:
 @router.post("/{plan_id}", status_code=status.HTTP_202_ACCEPTED)
 async def start_analysis(
     plan_id: UUID,
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -131,6 +133,7 @@ async def start_analysis(
     Returns immediately with status PROCESSING.
     Poll GET /analysis/{plan_id}/status to check progress.
     """
+    check_rate_limit(request, "analysis")
     result = await db.execute(
         select(FloorPlan).where(FloorPlan.id == plan_id)
     )

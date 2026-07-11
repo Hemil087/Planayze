@@ -10,11 +10,12 @@ POST /chat/{plan_id}
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.rate_limit import check_rate_limit
 from app.models.analysis import Analysis
 from app.schemas.extraction import FloorPlanExtraction
 from app.schemas.chat import ChatRequest, ChatResponse
@@ -28,7 +29,8 @@ router = APIRouter()
 @router.post("/{plan_id}", response_model=ChatResponse, status_code=status.HTTP_200_OK)
 async def chat_with_plan(
     plan_id: UUID,
-    request: ChatRequest,
+    chat_request: ChatRequest,
+    http_request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -37,6 +39,7 @@ async def chat_with_plan(
     Requires that POST /analysis/{plan_id} has been run first —
     the chat agent uses the stored extraction data.
     """
+    check_rate_limit(http_request, "chat")
     # Load the analysis row to get extraction JSON
     result = await db.execute(
         select(Analysis).where(Analysis.plan_id == plan_id)
@@ -65,7 +68,7 @@ async def chat_with_plan(
     # Run the chat agent
     response = await run_chat_agent(
         extraction=extraction,
-        messages=request.messages,
+        messages=chat_request.messages,
     )
 
     logger.info(
