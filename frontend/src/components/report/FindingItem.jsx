@@ -1,26 +1,58 @@
-import { SEVERITY_CONFIG, CATEGORY_LABELS } from '../../utils/constants';
+import { C, F } from '../../utils/tokens';
+import { SEVERITY_CONFIG } from '../../utils/constants';
 
 export default function FindingItem({ finding }) {
-  const config = SEVERITY_CONFIG[finding.severity] || SEVERITY_CONFIG.OBSERVATION;
+  const config   = SEVERITY_CONFIG[finding.severity] || SEVERITY_CONFIG.OBSERVATION;
+  const cardClass = config.cardClass; // 'violation' | 'tradeoff' | 'positive'
 
   return (
-    <div className={`group rounded-lg border p-4 transition-all duration-200 hover:shadow-md ${config.border}`}>
-      <div className="flex items-start gap-3">
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-sm ${config.iconBg}`}>
+    <div className={`finding-card ${cardClass}`}>
+      <div style={{ display: 'flex', gap: 11 }}>
+        {/* Severity icon */}
+        <div style={{
+          width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: config.iconBg, color: config.iconColor,
+          fontSize: 10, fontWeight: 700,
+        }}>
           {config.icon}
         </div>
-        <div className="min-w-0 flex-1">
-          <h4 className="font-semibold text-sm text-gray-900">{finding.title}</h4>
-          <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Title */}
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.tx, marginBottom: 4 }}>
+            {finding.title}
+          </div>
+
+          {/* Detail */}
+          <div style={{ fontSize: 12, color: C.mu, lineHeight: 1.65 }}>
             {finding.detail}
-          </p>
-          {finding.room_names?.length > 0 && (
-            <div className="flex gap-1.5 mt-2.5 flex-wrap">
-              {finding.room_names.map((room) => (
-                <span key={room} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 border border-gray-200">
+          </div>
+
+          {/* Room tags + Rule ID */}
+          {(finding.room_names?.length > 0 || finding.rule_id) && (
+            <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+              {finding.room_names?.map((room) => (
+                <span key={room} style={{
+                  fontFamily: F.mono, fontSize: 10,
+                  padding: '2px 7px', borderRadius: 4,
+                  background: C.acd, color: C.ac,
+                  border: '1px solid rgba(240,165,0,0.15)',
+                }}>
                   {room}
                 </span>
               ))}
+              {finding.rule_id && (
+                <span style={{
+                  fontFamily: F.mono, fontSize: 9,
+                  padding: '2px 6px', borderRadius: 4,
+                  background: '#0B1520', color: C.fn,
+                  border: `1px solid ${C.bd}`,
+                  marginLeft: 'auto',
+                }}>
+                  {finding.rule_id}
+                </span>
+              )}
             </div>
           )}
         </div>

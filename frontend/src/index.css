@@ -2,27 +2,154 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── BASE ─────────────────────────────────────────────────────────── */
 body {
-  @apply bg-white text-gray-900 antialiased;
+  background-color: #070D1A;
+  color: #DDE6F5;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Score ring animation */
+/* ── DOT GRID HERO BACKGROUND ─────────────────────────────────────── */
+.dot-grid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1' cy='1' r='1.1' fill='rgba(240%2C165%2C0%2C.08)'/%3E%3C/svg%3E");
+  background-size: 26px 26px;
+}
+
+/* ── UPLOAD ZONE ──────────────────────────────────────────────────── */
+.upload-zone {
+  border: 1.5px dashed #1D2E45;
+  border-radius: 14px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: rgba(240, 165, 0, 0.5);
+  background-color: rgba(240, 165, 0, 0.03);
+}
+
+/* ── TAB PILLS ────────────────────────────────────────────────────── */
+.pz-tab {
+  padding: 5px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid #1D2E45;
+  background: transparent;
+  color: #7090B0;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.pz-tab:hover { color: #DDE6F5; }
+.pz-tab.active {
+  background: rgba(240, 165, 0, 0.10);
+  border-color: rgba(240, 165, 0, 0.30);
+  color: #F0A500;
+}
+
+/* ── FINDING CARDS ────────────────────────────────────────────────── */
+.finding-card {
+  background: #0F1929;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.finding-card.violation {
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  border-left: 3px solid #F87171;
+  border-radius: 0 10px 10px 0;
+}
+.finding-card.tradeoff {
+  border: 1px solid rgba(251, 191, 36, 0.20);
+  border-left: 3px solid #FBBF24;
+  border-radius: 0 10px 10px 0;
+}
+.finding-card.positive {
+  border: 1px solid rgba(52, 211, 153, 0.20);
+  border-left: 3px solid #34D399;
+  border-radius: 0 10px 10px 0;
+}
+
+/* ── FEATURE CARDS ────────────────────────────────────────────────── */
+.feat-card {
+  background: #0F1929;
+  border: 1px solid #1D2E45;
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color 0.2s;
+}
+.feat-card:hover { border-color: rgba(240, 165, 0, 0.22); }
+
+/* ── CHAT SUGGESTIONS ─────────────────────────────────────────────── */
+.chat-suggest {
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  margin-bottom: 6px;
+  background: #0F1929;
+  border: 1px solid #1D2E45;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #7090B0;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.chat-suggest:hover {
+  border-color: rgba(240, 165, 0, 0.30);
+  color: #F0A500;
+}
+
+/* ── CHAT INPUT ───────────────────────────────────────────────────── */
+.chat-input {
+  flex: 1;
+  padding: 9px 14px;
+  background: #070D1A;
+  border: 1px solid #1D2E45;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #DDE6F5;
+  outline: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  transition: border-color 0.15s;
+}
+.chat-input:focus    { border-color: rgba(240, 165, 0, 0.4); }
+.chat-input::placeholder { color: #3A5070; }
+
+/* ── SCORE RING ANIMATION ─────────────────────────────────────────── */
 @keyframes score-fill {
   from { stroke-dashoffset: 283; }
 }
-
 .score-ring-animated {
-  animation: score-fill 1.2s ease-out forwards;
+  animation: score-fill 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Smooth scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+/* ── PAGE TRANSITIONS ─────────────────────────────────────────────── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+.animate-fade-in  { animation: fade-in-up 0.45s ease-out both; }
+.animate-slide-up { animation: fade-in-up 0.45s ease-out both; }
+
+/* ── AMBER PULSE ──────────────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 999px;
+.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* ── LOADING DOTS ─────────────────────────────────────────────────── */
+@keyframes bounce-dot {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-5px); }
 }
+.bounce-0 { animation: bounce-dot 1.2s ease-in-out infinite 0ms; }
+.bounce-1 { animation: bounce-dot 1.2s ease-in-out infinite 150ms; }
+.bounce-2 { animation: bounce-dot 1.2s ease-in-out infinite 300ms; }
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar       { width: 3px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #1D2E45; border-radius: 9999px; }

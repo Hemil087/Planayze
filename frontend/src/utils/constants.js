@@ -1,27 +1,30 @@
+// iconBg / iconColor / dot are now style values, not Tailwind classes.
+// Components apply them with style={{ background: config.iconBg, color: config.iconColor }}
+
 export const SEVERITY_CONFIG = {
   VIOLATION: {
-    label: 'Violations',
-    icon: '✕',
-    iconBg: 'bg-red-100 text-red-600',
-    border: 'border-red-100 bg-white',
-    accent: 'text-red-600',
-    dot: 'bg-red-500',
+    label:       'Violation',
+    icon:        '✕',
+    iconBg:      'rgba(248,113,113,0.10)',
+    iconColor:   '#F87171',
+    dot:         '#F87171',
+    cardClass:   'violation',
   },
   TRADEOFF: {
-    label: 'Tradeoffs',
-    icon: '⚡',
-    iconBg: 'bg-amber-100 text-amber-600',
-    border: 'border-amber-100 bg-white',
-    accent: 'text-amber-600',
-    dot: 'bg-amber-500',
+    label:       'Tradeoff',
+    icon:        '⚡',
+    iconBg:      'rgba(251,191,36,0.10)',
+    iconColor:   '#FBBF24',
+    dot:         '#FBBF24',
+    cardClass:   'tradeoff',
   },
   OBSERVATION: {
-    label: 'Observations',
-    icon: '✓',
-    iconBg: 'bg-emerald-100 text-emerald-600',
-    border: 'border-emerald-100 bg-white',
-    accent: 'text-emerald-600',
-    dot: 'bg-emerald-500',
+    label:       'Positive',
+    icon:        '✓',
+    iconBg:      'rgba(52,211,153,0.10)',
+    iconColor:   '#34D399',
+    dot:         '#34D399',
+    cardClass:   'positive',
   },
 };
 
@@ -34,11 +37,12 @@ export const CATEGORY_LABELS = {
   SIZE_ADEQUACY:    'Size Adequacy',
 };
 
+// Geometric monospace symbols — no emoji
 export const CATEGORY_ICONS = {
-  SPACE_EFFICIENCY: '📏',
-  VENTILATION:      '💨',
-  PRIVACY:          '🔒',
-  CIRCULATION:      '🚶',
-  ADJACENCY:        '🏗️',
-  SIZE_ADEQUACY:    '📐',
+  SPACE_EFFICIENCY: '◼',
+  VENTILATION:      '◈',
+  PRIVACY:          '◧',
+  CIRCULATION:      '◉',
+  ADJACENCY:        '◫',
+  SIZE_ADEQUACY:    '◱',
 };

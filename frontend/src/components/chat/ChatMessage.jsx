@@ -1,22 +1,42 @@
+import { C, F } from '../../utils/tokens';
+
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-slide-up`}>
-      <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed
-        ${isUser
-          ? 'bg-brand-600 text-white rounded-br-sm'
-          : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100 shadow-sm'
-        }`}
-      >
-        <p className="whitespace-pre-wrap">{message.content}</p>
-        {message.tools?.length > 0 && (
-          <div className="flex gap-1 mt-2 flex-wrap">
+    <div className="animate-slide-up" style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
+      <div style={{
+        maxWidth: '85%',
+        padding: '9px 13px',
+        fontSize: 12,
+        lineHeight: 1.65,
+        ...(isUser
+          ? {
+              background: C.ac,
+              color: '#0A0C14',
+              fontWeight: 500,
+              borderRadius: '12px 12px 3px 12px',
+            }
+          : {
+              background: C.su2,
+              color: C.tx,
+              border: `1px solid ${C.bd}`,
+              borderRadius: '12px 12px 12px 3px',
+            }
+        ),
+      }}>
+        <p style={{ whiteSpace: 'pre-wrap' }}>{message.content}</p>
+
+        {/* Tool call badges — shown on assistant messages */}
+        {!isUser && message.tools?.length > 0 && (
+          <div style={{ display: 'flex', gap: 4, marginTop: 8, flexWrap: 'wrap' }}>
             {[...new Set(message.tools)].map((t, i) => (
-              <span key={i} className={`text-[9px] font-mono px-1.5 py-0.5 rounded-md ${
-                isUser ? 'bg-white/20' : 'bg-gray-100 text-gray-500'
-              }`}>
-                🔧 {t}
+              <span key={i} style={{
+                fontFamily: F.mono, fontSize: 9,
+                padding: '2px 6px', borderRadius: 4,
+                background: C.acd, color: C.ac,
+              }}>
+                ⚙ {t}
               </span>
             ))}
           </div>
