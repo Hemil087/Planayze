@@ -1,7 +1,7 @@
 """
 Summary Writer — Phase 7
 
-Prompts Gemini with the findings JSON only (no image) to produce
+Prompts the LLM with the findings JSON only (no image) to produce
 a 3–4 sentence plain-English summary.
 
 Key constraint: the LLM must not introduce any issues that are not
@@ -12,12 +12,12 @@ rule engine found — not new analysis.
 import json
 import logging
 
-from vertexai.generative_models import GenerationConfig, SafetySetting, HarmCategory, HarmBlockThreshold
-
-from app.core.gemini import get_gemini_model
+from app.core.openrouter import get_openrouter_client
+from app.core.config import get_settings
 from app.schemas.report import ReportSummary
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
 _SUMMARY_PROMPT = """\
 You are a real-estate analyst writing a brief summary for an apartment buyer.
@@ -57,9 +57,8 @@ async def write_summary(report: ReportSummary) -> str:
         report: ReportSummary with pros, cons, and score already computed.
 
     Returns:
-        Summary string (3–4 sentences). On failure, returns a fallback.
+        Summary string (3–4 sentences). On failure, returns a deterministic fallback.
     """
-    # Build a compact findings representation for the prompt
     findings_for_prompt = []
     for finding in report.cons + report.pros:
         findings_for_prompt.append({
@@ -78,54 +77,24 @@ async def write_summary(report: ReportSummary) -> str:
     )
 
     try:
-        model = get_gemini_model()
-        # Relax safety filters — the findings JSON contains benign
-        # architectural terms ("violation", "noise") that can trip
-        # Vertex AI's content filter.
-        safety_settings = [
-            SafetySetting(
-                category=category,
-                threshold=HarmBlockThreshold.OFF,
-            )
-            for category in [
-                HarmCategory.HARM_CATEGORY_HARASSMENT,
-                HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-            ]
-        ]
-
-        response = model.generate_content(
-            [prompt],
-            generation_config=GenerationConfig(
-                temperature=0.3,
-                max_output_tokens=8192,
-            ),
-            safety_settings=safety_settings,
+        client = get_openrouter_client()
+        response = client.chat.completions.create(
+            model=settings.OPENROUTER_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=512,
         )
 
-        # Vertex AI raises ValueError on .text if response has no
-        # candidates (content filter, empty generation, etc.)
-        if not response.candidates:
+        summary = response.choices[0].message.content
+        if not summary or not summary.strip():
             logger.warning(
-                f"Gemini returned no candidates for plan {report.plan_id} — "
-                f"using fallback summary"
+                f"Empty summary response for plan {report.plan_id} — using fallback"
             )
             return _fallback_summary(report)
 
-        candidate = response.candidates[0]
-        if not candidate.content or not candidate.content.parts:
-            logger.warning(
-                f"Gemini candidate has no content for plan {report.plan_id} — "
-                f"finish_reason={candidate.finish_reason}, "
-                f"using fallback summary"
-            )
-            return _fallback_summary(report)
-
-        summary = candidate.content.parts[0].text.strip()
+        summary = summary.strip()
         logger.info(
-            f"Summary generated for plan {report.plan_id} "
-            f"({len(summary)} chars)"
+            f"Summary generated for plan {report.plan_id} ({len(summary)} chars)"
         )
         return summary
 
@@ -134,13 +103,13 @@ async def write_summary(report: ReportSummary) -> str:
             f"Summary generation failed for plan {report.plan_id}: {e}",
             exc_info=True,
         )
-        # Deterministic fallback — never leave summary_text empty
         return _fallback_summary(report)
 
 
 def _fallback_summary(report: ReportSummary) -> str:
     """
-    Deterministic fallback summary when Gemini is unavailable.
+    Deterministic fallback summary when the LLM is unavailable.
+    Never leaves summary_text empty.
     """
     parts = [f"This floor plan scored {report.overall_score} out of 100."]
 

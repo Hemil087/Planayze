@@ -10,12 +10,9 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
 
-    # Vertex AI
-    PROJECT_ID: str = "planalyze-dev"
-    REGION: str = "asia-south1"
-    GOOGLE_APPLICATION_CREDENTIALS_JSON: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-flash"
-
+    OPENROUTER_API_KEY: str
+    OPENROUTER_MODEL: str = "google/gemma-4-31b-it:free"
+    OPENROUTER_CHAT_MODEL: str = "nvidia/nemotron-3-super-120b-a12b:free"
     CONSISTENCY_RUNS: int = 5
     CONSISTENCY_THRESHOLD: int = 3
     STORAGE_DIR: str = "/storage/plans"
